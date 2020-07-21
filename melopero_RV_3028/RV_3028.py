@@ -30,6 +30,21 @@ class RV_3028():
     HOURS_ALARM_REGISTER_ADDRESS = 0x08
     WEEKDAY_DATE_ALARM_REGISTER_ADDRESS = 0x09
 
+    TIMER_VALUE_0_ADDRESS = 0x0A
+    TIMER_VALUE_1_ADDRESS = 0x0B
+
+    TIMER_STATUS_0_ADDRESS = 0x0C
+    TIMER_STATUS_1_ADDRESS = 0x0D
+
+    TIMER_FREQ_4096Hz = 0
+    '''period 244.14 microseconds'''
+    TIMER_FREQ_64Hz = 1
+    '''period 15.625 milliseconds '''
+    TIMER_FREQ_1Hz = 2
+    '''period 1 second'''
+    TIMER_FREQ_1_60Hz = 3
+    '''period 60 seconds'''
+
     def __init__(self, i2c_addr=RV_3028_ADDRESS, i2c_bus=1):
         self.i2c_address = i2c_addr
         self.i2c_bus = i2c_bus
@@ -164,19 +179,24 @@ class RV_3028():
         bcd_weekday = self._dec_to_bcd(weekday) | ((not enable) << 7)
         self.write_register(RV_3028.WEEKDAY_DATE_ALARM_REGISTER_ADDRESS, bcd_weekday)
 
-    def set_alarm(self, enable : bool, generate_interrupt : bool) -> None:
+    def enable_alarm(self, enable : bool, generate_interrupt : bool) -> None:
         '''
         Enables/Disables the alarm.
         :param enable: if False disables/resets all alarm settings.
         :param generate_interrupt: if True the alarm will trigger an interrupt on the INT pin.
         :return:
         '''
+        #TODO: replace if else statements with bit operations
+
         # reset AF bit in STATUS reg
         self.and_or_register(RV_3028.STATUS_REGISTER_ADDRESS, ~0x04, 0)
         if enable:
             if generate_interrupt:
                 #enable AIE bit in CONTROL 2 reg
                 self.and_or_register(RV_3028.CONTROL2_REGISTER_ADDRESS, 0xFF, 0x08)
+            else :
+                # disable AIE bit in CONTROL 2 reg
+                self.and_or_register(RV_3028.CONTROL2_REGISTER_ADDRESS, ~0x08, 0)
         else:
             #disable AIE bit in CONTROL 2 reg
             self.and_or_register(RV_3028.CONTROL2_REGISTER_ADDRESS, ~0x08, 0)
@@ -184,3 +204,58 @@ class RV_3028():
             self.set_minute_alarm(0, False)
             self.set_hour_alarm_24h_format(0, False)
             self.set_date_alarm(0, False)
+
+    def set_timer(self, ticks : int, frequency : int) -> None:
+        '''
+        Sets the timer parameters.
+        :param ticks: the amount of ticks to countdown
+        :param frequency: the frequency of the ticks. Must be one of TIMER_FREQ_X
+        :return:
+        '''
+        value_lsb = ticks & 0xFF
+        value_msb = (ticks >> 8) & 0xFF
+        self.write_register(RV_3028.TIMER_VALUE_0_ADDRESS, value_lsb)
+        self.write_register(RV_3028.TIMER_VALUE_1_ADDRESS, value_msb)
+        self.and_or_register(RV_3028.CONTROL1_REGISTER_ADDRESS, 0x3F << 2 | frequency, frequency)
+
+    def enable_timer(self, enable : bool, repeat : bool, generate_interrupt : bool) -> None:
+        '''
+        Enables/Disables the timer. The timer settings must be set before calling this function.
+        :param enable: if true starts the timer
+        :param repeat: if true the timer will repeat on end
+        :param generate_interrupt: if true an interrupt will be triggered on the INT pin when the timer ends
+        :return:
+        '''
+        #TODO: replace if else statements with bit operations
+        if not enable:
+            #disable TE bit to disable the timer
+            self.and_or_register(RV_3028.CONTROL1_REGISTER_ADDRESS, 0xFB, 0)
+            #disable TIE bit to disable the timer interrupt
+            self.and_or_register(RV_3028.CONTROL2_REGISTER_ADDRESS, 0xEF, 0)
+
+        #reset the TF bit
+        self.and_or_register(RV_3028.STATUS_REGISTER_ADDRESS, 0xF7,0)
+        # enable/disable TRPT
+        if repeat:
+            self.and_or_register(RV_3028.CONTROL1_REGISTER_ADDRESS, 0xFF, 0x80)
+        else:
+            self.and_or_register(RV_3028.CONTROL1_REGISTER_ADDRESS, 0x7F, 0)
+
+        if enable:
+            #enable/disable interrupt
+            if generate_interrupt:
+                self.and_or_register(RV_3028.CONTROL2_REGISTER_ADDRESS, 0xFF, 0x10)
+            else:
+                self.and_or_register(RV_3028.CONTROL2_REGISTER_ADDRESS, 0xEF, 0)
+            #start timer
+            self.and_or_register(RV_3028.CONTROL1_REGISTER_ADDRESS, 0xFF, 0x04)
+
+    def get_timer_status(self) -> int:
+        '''
+        When TE bit (0Fh) is set to 1, the Timer Status 0 and Timer Status 1 shadow registers hold the current countdown
+        value. When a 0 is written to the TE bit, the Timer Status 0 and Timer Status 1 registers store the last updated
+        value.
+        :return: the remaining time of the timer or the last time set.
+        '''
+        values = self.read_registers(RV_3028.TIMER_STATUS_0_ADDRESS, 2)
+        return values[1] << 8 | values[0]

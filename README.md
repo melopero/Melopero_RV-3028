@@ -5,7 +5,7 @@
 ### Use of the alarm interrupt
 Prior to entering any timer settings for the Alarm Interrupt, it is recommended to disable the alarm to prevent inadvertent interrupts on the INT pin:
 ```python 
-rtc.set_alarm(enable = False, generate_interrupt = False) 
+rtc.enable_alarm(enable = False, generate_interrupt = False) 
 ```
 *Note: Disabling the alarm will reset your alarm settings*
 
@@ -31,7 +31,7 @@ Any combination of alarm settings can be used. The table below describes the eff
 
 Finally you can activate the alarm :
 ```python 
-rtc.set_alarm(enable = True, generate_interrupt = True) 
+rtc.enable_alarm(enable = True, generate_interrupt = True) 
 ```
 
 ### Use of the countdown timer
