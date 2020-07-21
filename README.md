@@ -42,4 +42,21 @@ rtc.read_register(RV_3028.USER_RAM1_ADDRESS) # returns the value stored in the r
 rtc.write_register(RV_3028.USER_RAM2_ADDRESS, 0x42) # writes 0x42 to the register at address USER_RAM2_ADDRESS (0x20)
 ```
 *Note: these functions can be used to read and write to any register of the RAM*
+
 ### Use of the EEPROM as user memory
+There are 43 Bytes of non-volatile User EEPROM, addresses from 0x00 to 0x2A. To write and read data from these registers you must call the function :
+```python 
+rtc.use_eeprom(disable_refresh = True) 
+```
+This function disables the automatic refresh of the device configuration. This happens every 24 hours if the automatic refresh is enabled. 
+
+Then you can read and write to the EEPROM with the following functions:
+```python 
+rtc.read_eeprom_register(register_address = 0x10) # reads byte in eeprom at address 0x10
+rtc.write_eeprom_register(register_address = 0x10, value = 0x42) # writes 0x42 in eeprom at address 0x10 
+```
+
+If you don't need to read/write anymore to the eeprom and want to enable the automatic configuration refresh you can call the ```use_eeprom(disable_refresh : bool)``` function again:
+```python 
+rtc.use_eeprom(disable_refresh = False) 
+```
