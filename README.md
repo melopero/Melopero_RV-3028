@@ -35,4 +35,11 @@ rtc.enable_alarm(enable = True, generate_interrupt = True)
 ```
 
 ### Use of the countdown timer
+### Use of the user RAM registers
+There are two free RAM bytes, which can be used for any purpose. These registers can be accessed with the following functions:
+```python 
+rtc.read_register(RV_3028.USER_RAM1_ADDRESS) # returns the value stored in the register at address USER_RAM1_ADDRESS (0x1F)
+rtc.write_register(RV_3028.USER_RAM2_ADDRESS, 0x42) # writes 0x42 to the register at address USER_RAM2_ADDRESS (0x20)
+```
+*Note: these functions can be used to read and write to any register of the RAM*
 ### Use of the EEPROM as user memory

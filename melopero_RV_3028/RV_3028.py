@@ -45,6 +45,13 @@ class RV_3028():
     TIMER_FREQ_1_60Hz = 3
     '''period 60 seconds'''
 
+    USER_RAM1_ADDRESS = 0x1F
+    USER_RAM2_ADDRESS = 0x20
+
+    EEPROM_ADDRESS_ADDRESS = 0x25
+    EEPROM_DATA_ADDRESS = 0x26
+    EEPROM_COMMAND_ADDRESS = 0x27
+
     def __init__(self, i2c_addr=RV_3028_ADDRESS, i2c_bus=1):
         self.i2c_address = i2c_addr
         self.i2c_bus = i2c_bus
@@ -136,6 +143,7 @@ class RV_3028():
         '''
         Sets the hour for the alarm in 24h format, set the device to use the 24h format before setting the
         alarm with this function.
+
         :param hour: the hour expressed in 24 hour format
         :param enable: if false disables the alarm
         :return:
@@ -147,6 +155,7 @@ class RV_3028():
         '''
         Sets the hour for the alarm in 12h format, set the device to use the 12h format before setting the
         alarm with this function.
+
         :param hour: the hour expressed in 12 hour format
         :param pm: the period
         :param enable: if false disables the alarm
@@ -158,6 +167,7 @@ class RV_3028():
     def set_date_alarm(self, date : int, enable = True) -> None:
         '''
         Sets the date for the alarm. The weekday for the alarm (if set) will be overwritten and not used anymore.
+
         :param date: the date expressed as an integer in range 1 to 31
         :param enable: if false disables the alarm
         :return:
@@ -170,6 +180,7 @@ class RV_3028():
     def set_weekday_alarm(self, weekday : int, enable = True) -> None:
         '''
         Sets the weekday for the alarm. The date for the alarm (if set) will be overwritten and not used anymore.
+
         :param weekday: the weekday expressed as an integer in range 0 to 6
         :param enable:
         :return:
@@ -182,6 +193,7 @@ class RV_3028():
     def enable_alarm(self, enable : bool, generate_interrupt : bool) -> None:
         '''
         Enables/Disables the alarm.
+
         :param enable: if False disables/resets all alarm settings.
         :param generate_interrupt: if True the alarm will trigger an interrupt on the INT pin.
         :return:
@@ -208,6 +220,7 @@ class RV_3028():
     def set_timer(self, ticks : int, frequency : int) -> None:
         '''
         Sets the timer parameters.
+
         :param ticks: the amount of ticks to countdown
         :param frequency: the frequency of the ticks. Must be one of TIMER_FREQ_X
         :return:
@@ -221,6 +234,7 @@ class RV_3028():
     def enable_timer(self, enable : bool, repeat : bool, generate_interrupt : bool) -> None:
         '''
         Enables/Disables the timer. The timer settings must be set before calling this function.
+
         :param enable: if true starts the timer
         :param repeat: if true the timer will repeat on end
         :param generate_interrupt: if true an interrupt will be triggered on the INT pin when the timer ends
@@ -252,10 +266,64 @@ class RV_3028():
 
     def get_timer_status(self) -> int:
         '''
-        When TE bit (0Fh) is set to 1, the Timer Status 0 and Timer Status 1 shadow registers hold the current countdown
-        value. When a 0 is written to the TE bit, the Timer Status 0 and Timer Status 1 registers store the last updated
-        value.
-        :return: the remaining time of the timer or the last time set.
+        When the timer is running (enabled), this function returns the remaining countdown ticks.
+        When the timer is not running (disabled), this function returns the last updated ticks value.
+
+        :return: an int representing the remaining ticks of the timer or the last ticks set.
         '''
         values = self.read_registers(RV_3028.TIMER_STATUS_0_ADDRESS, 2)
         return values[1] << 8 | values[0]
+
+    def set_interrupt_mask(self, event_interrupt : bool, alarm_interrupt : bool, periodic_countdown_interrupt : bool,
+                           periodic_time_update_interrupt : bool) -> None:
+        pass
+
+    def get_unix_time(self) -> int:
+        pass
+
+    def use_eeprom(self, disable_refresh = True) -> None:
+        '''
+        Sets up the device to read/write from/to the eeprom memory. The automatic refresh function has to be disabled.
+
+        :param disable_refresh: disables/enables the automatic refresh function
+        :return:
+        '''
+        #TODO: replace if else statement with bit operations
+        if disable_refresh:
+            self.and_or_register(RV_3028.CONTROL1_REGISTER_ADDRESS, 0xFF, 0x08)
+            self.write_register(RV_3028.EEPROM_COMMAND_ADDRESS, 0)
+        else:
+            self.and_or_register(RV_3028.CONTROL1_REGISTER_ADDRESS, 0xF7, 0)
+
+
+    def read_eeprom_register(self, register_address : int) -> int:
+        '''
+        Reads an eeprom register and returns its content.
+
+        :param register_address: the register value
+        :return:
+        '''
+        self.write_register(RV_3028.EEPROM_ADDRESS_ADDRESS, register_address)
+        while self.is_eeprom_busy():
+            continue
+        #read a register -> eeprom data = 0x22
+        self.write_register(RV_3028.EEPROM_COMMAND_ADDRESS, 0x22)
+        return self.read_register(RV_3028.EEPROM_DATA_ADDRESS)
+
+    def write_eeprom_register(self, register_address : int, value : int) -> None:
+        '''
+        Writes value to the eeprom register at addressregister_address.
+
+        :param register_address: the address of the eeprom register
+        :param value: the value to write
+        :return:
+        '''
+        self.write_register(RV_3028.EEPROM_ADDRESS_ADDRESS, register_address)
+        self.write_register(RV_3028.EEPROM_DATA_ADDRESS, value)
+        while self.is_eeprom_busy():
+            continue
+        #write to a register in eeprom = 0x21
+        self.write_register(RV_3028.EEPROM_COMMAND_ADDRESS, 0x21)
+
+    def is_eeprom_busy(self) -> bool:
+        return bool(self.read_register(RV_3028.STATUS_REGISTER_ADDRESS) & 0x80)
