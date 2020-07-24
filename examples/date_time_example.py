@@ -12,9 +12,11 @@ def main():
     rtc = mp.RV_3028()
     current_datetime = datetime.datetime.now()
     rtc.set_time(current_datetime.hour, current_datetime.minute, current_datetime.second)
-    print(rtc.get_time())
-    time.sleep(3)
-    print(rtc.get_time())
+    rtc.set_date(current_datetime.weekday(), current_datetime.day, current_datetime.month, current_datetime.year % 2000)
+    print(rtc.get_datetime())
+    for i in range(10):
+        time.sleep(.99)
+        print(rtc.get_datetime())
 
 if __name__ == "__main__":
     main()
