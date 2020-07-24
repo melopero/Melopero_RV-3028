@@ -52,6 +52,8 @@ class RV_3028():
     EEPROM_DATA_ADDRESS = 0x26
     EEPROM_COMMAND_ADDRESS = 0x27
 
+    UNIX_TIME_ADDRESS = 0x1B
+
     def __init__(self, i2c_addr=RV_3028_ADDRESS, i2c_bus=1):
         self.i2c_address = i2c_addr
         self.i2c_bus = i2c_bus
@@ -277,9 +279,16 @@ class RV_3028():
     def set_interrupt_mask(self, event_interrupt : bool, alarm_interrupt : bool, periodic_countdown_interrupt : bool,
                            periodic_time_update_interrupt : bool) -> None:
         pass
+        #TODO: implement interrupt mask
 
     def get_unix_time(self) -> int:
-        pass
+        '''
+        UNIX Time counter is a 32-bit counter. The counter will roll-over to 00000000h when reaching FFFFFFFFh.
+
+        :return:
+        '''
+        time_bytes = self.read_registers(RV_3028.UNIX_TIME_ADDRESS, 4)
+        return time_bytes[3] << 24 | time_bytes[2] << 16 | time_bytes[1] << 8 | time_bytes[0]
 
     def use_eeprom(self, disable_refresh = True) -> None:
         '''
