@@ -145,7 +145,7 @@ class RV_3028():
         '''
         dec_bytes = [self._bcd_to_dec(bcd_byte) for bcd_byte in
                      self.read_registers(RV_3028.WEEKDAY_REGISTER_ADDRESS, 4)]
-        return dict(zip['weekday', 'date', 'month', 'year'], dec_bytes)
+        return dict(zip(['weekday', 'date', 'month', 'year'], dec_bytes))
 
     def set_date(self, weekday: int, date: int, month: int, year: int) -> None:
         '''
