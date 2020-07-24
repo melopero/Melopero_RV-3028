@@ -4,4 +4,4 @@
 @author: Leonardo La Rocca
 """
 
-from melopero_RV_3028 import RV_3028
+from melopero_RV_3028.RV_3028 import RV_3028

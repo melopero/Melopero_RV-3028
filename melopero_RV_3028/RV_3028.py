@@ -81,14 +81,14 @@ class RV_3028():
         :param bcd: 8 bit value expressed in binary coded decimal
         :return: the value converted in decimal format
         '''
-        return (bcd / 0x10 * 10) + (bcd % 0x10)
+        return (bcd // 0x10 * 10) + (bcd % 0x10)
 
     def _dec_to_bcd(self, dec: int) -> int:
         '''
         :param dec: 8 bit value expressed in decimal
         :return: the value converted in binary coded decimal format
         '''
-        return ((dec / 10) << 4) ^ (dec % 10)
+        return ((dec // 10) << 4) ^ (dec % 10)
 
     def is_using_12h_mode(self) -> bool:
         return bool(self.read_register(RV_3028.CONTROL2_REGISTER_ADDRESS) & 0x02)
