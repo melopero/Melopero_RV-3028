@@ -9,6 +9,7 @@ import datetime
 import gpiozero as gpio
 from signal import pause
 
+
 def main():
     # First initialize and create the rtc device
     rtc = mp.RV_3028()
@@ -26,10 +27,11 @@ def main():
     # set the timer to repeatedly fire after 10 seconds
     rtc.set_timer(10, mp.RV_3028.TIMER_FREQ_1Hz)
     rtc.enable_timer(enable=True, repeat=True, generate_interrupt=True)
+    print("Timer set to trigger every 5 seconds...")
 
     # set the pin to listen to interrupts
     int_listener_pin = 7  # gpio4
-    interrupt = gpio.Button(int_listener_pin)
+    interrupt = gpio.Button(int_listener_pin, active_state=False)
     interrupt.when_pressed = on_interrupt
 
     pause()

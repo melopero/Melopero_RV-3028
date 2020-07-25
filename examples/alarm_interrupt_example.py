@@ -30,7 +30,7 @@ def main():
 
     # set the pin to listen to interrupts
     int_listener_pin = 7  # gpio4
-    interrupt = gpio.Button(int_listener_pin)
+    interrupt = gpio.Button(int_listener_pin, active_state=False)
     interrupt.when_pressed = on_interrupt
 
     pause()

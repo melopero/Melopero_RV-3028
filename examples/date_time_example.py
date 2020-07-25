@@ -22,14 +22,15 @@ def main():
     # set the date and time for the device
     rtc.set_time(current_datetime.hour, current_datetime.minute, current_datetime.second)
     rtc.set_date(current_datetime.weekday(), current_datetime.day, current_datetime.month, current_datetime.year % 2000)
+    print("Date and Time set to: {}".format(current_datetime))
 
     # print datetime to make sure everything works
-    print(rtc.get_datetime())
+    print("[RTC]:", rtc.get_datetime())
 
-    # print datetime every 10 seconds (for 10 times)
+    # print datetime every second (for 10 times)
     for i in range(10):
-        time.sleep(10)
-        print(rtc.get_datetime())
+        time.sleep(1)
+        print("[RTC]:", rtc.get_datetime())
 
 
 if __name__ == "__main__":
