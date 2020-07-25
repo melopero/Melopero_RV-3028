@@ -37,3 +37,7 @@ def main():
 
 def on_interrupt():
     print("Timer: beep beep")
+
+
+if __name__ == "__main__":
+    main()

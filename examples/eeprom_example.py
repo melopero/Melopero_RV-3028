@@ -31,3 +31,7 @@ def main():
     my_saved_data = rtc.read_eeprom_register(register_address=my_reg_address)
 
     print("Read {} from eeprom address {}".format(my_saved_data, my_reg_address))
+
+
+if __name__ == "__main__":
+    main()

@@ -38,3 +38,7 @@ def main():
 
 def on_interrupt():
     print("Alarm: beep beep")
+
+
+if __name__ == "__main__":
+    main()
