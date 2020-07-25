@@ -5,6 +5,7 @@
 """
 
 import melopero_RV_3028 as mp
+import time
 
 def main():
     # First initialize and create the rtc device
@@ -23,6 +24,9 @@ def main():
     rtc.write_eeprom_register(register_address=my_reg_address, value=my_data)
 
     print("Saved {} at address {} in eeprom".format(my_data, my_reg_address))
+
+    # give some time to execute writing operation
+    time.sleep(1)
 
     # to read from ram registers you must use rtc.read_register
     # to write to eeprom you must use rtc.read_eeprom_register

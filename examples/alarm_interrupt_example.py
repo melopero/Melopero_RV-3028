@@ -24,13 +24,16 @@ def main():
     rtc.set_time(current_datetime.hour, current_datetime.minute, current_datetime.second)
     rtc.set_date(current_datetime.weekday(), current_datetime.day, current_datetime.month, current_datetime.year % 2000)
 
+    # First disable other sources of interrupts
+    rtc.enable_timer(enable=False, repeat=False, generate_interrupt=False)
+
     # set the alarm to trigger 2 minutes from now
     rtc.set_minute_alarm(current_datetime.minute + 2 % 60)
     rtc.enable_alarm(enable=True, generate_interrupt=True)
 
     # set the pin to listen to interrupts
-    int_listener_pin = 7  # gpio4
-    interrupt = gpio.Button(int_listener_pin, active_state=False)
+    int_listener_pin = "GPIO4"
+    interrupt = gpio.Button(int_listener_pin)
     interrupt.when_pressed = on_interrupt
 
     pause()
