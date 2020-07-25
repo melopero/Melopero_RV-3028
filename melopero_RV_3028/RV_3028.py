@@ -343,6 +343,8 @@ class RV_3028():
     def read_eeprom_register(self, register_address: int) -> int:
         '''
         Reads an eeprom register and returns its content.
+        user eeprom address space : [0x00 - 0x2A]
+        configuration eeprom address space : [0x30 - 0x37]
 
         :param register_address: the register value
         :return:
@@ -356,7 +358,9 @@ class RV_3028():
 
     def write_eeprom_register(self, register_address: int, value: int) -> None:
         '''
-        Writes value to the eeprom register at addressregister_address.
+        Writes value to the eeprom register at address register_address.
+        user eeprom address space : [0x00 - 0x2A]
+        configuration eeprom address space : [0x30 - 0x37]
 
         :param register_address: the address of the eeprom register
         :param value: the value to write
