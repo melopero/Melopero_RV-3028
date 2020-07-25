@@ -312,6 +312,19 @@ class RV_3028():
         values = self.read_registers(RV_3028.TIMER_STATUS_0_ADDRESS, 2)
         return values[1] << 8 | values[0]
 
+    def clear_interrupt_flags(self, clear_timer_flag=True, clear_alarm_flag=True):
+        '''
+        Clears the timer and alarm interrupt flags in the status register.
+
+        :param clear_timer_flag:
+        :param clear_alarm_flag:
+        :return:
+        '''
+        mask = 0xFF
+        mask &= 0xF7 if clear_timer_flag else 0xFF
+        mask &= 0xFB if clear_alarm_flag else 0xFF
+        self.and_or_register(RV_3028.STATUS_REGISTER_ADDRESS, mask, 0)
+
     def set_interrupt_mask(self, event_interrupt: bool, alarm_interrupt: bool, periodic_countdown_interrupt: bool,
                            periodic_time_update_interrupt: bool) -> None:
         pass

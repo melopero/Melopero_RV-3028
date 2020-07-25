@@ -24,8 +24,9 @@ def main():
     rtc.set_time(current_datetime.hour, current_datetime.minute, current_datetime.second)
     rtc.set_date(current_datetime.weekday(), current_datetime.day, current_datetime.month, current_datetime.year % 2000)
 
-    #First disable other sources of interrupts
+    # First disable other sources of interrupts
     rtc.enable_alarm(enable=False, generate_interrupt=False)
+    rtc.clear_interrupt_flags()
 
     # set the timer to repeatedly fire after 5 seconds
     rtc.set_timer(5, mp.RV_3028.TIMER_FREQ_1Hz)
@@ -33,15 +34,17 @@ def main():
     print("Timer set to trigger every 5 seconds...")
 
     # set the pin to listen to interrupts
+    def on_interrupt():
+        print("Timer: beep beep")
+        rtc.clear_interrupt_flags()
+
     int_listener_pin = "GPIO4"
-    interrupt = gpio.Button(int_listener_pin)
+    interrupt = gpio.Button(int_listener_pin, pull_up=None, active_state=False)
     interrupt.when_pressed = on_interrupt
 
     pause()
 
 
-def on_interrupt():
-    print("Timer: beep beep")
 
 
 if __name__ == "__main__":
