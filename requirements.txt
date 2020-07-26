@@ -1,0 +1,2 @@
+setuptools~=49.2.0
+smbus2~=0.3.0
