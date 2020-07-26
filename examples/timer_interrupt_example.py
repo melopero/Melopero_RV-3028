@@ -33,14 +33,12 @@ def main():
     rtc.set_timer(5, mp.RV_3028.TIMER_FREQ_1Hz)
     rtc.enable_timer(enable=True, repeat=True, generate_interrupt=True)
     print("Timer set to trigger every 5 seconds...")
-    status = rtc.read_register(mp.RV_3028.STATUS_REGISTER_ADDRESS)
-    control1 = rtc.read_register(mp.RV_3028.CONTROL1_REGISTER_ADDRESS)
-    control2 = rtc.read_register(mp.RV_3028.CONTROL2_REGISTER_ADDRESS)
-    print("Status: {:010} Control1: {:010} Control2: {0:10}").format(status, control1, control2)
 
     # set the pin to listen to interrupts
     def on_interrupt():
         print("Timer: beep beep")
+        print(rtc.get_time())
+        print("Press CTRL + C to terminate program...")
         rtc.clear_interrupt_flags()
 
     int_listener_pin = "GPIO4"

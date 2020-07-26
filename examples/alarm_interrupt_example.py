@@ -26,17 +26,24 @@ def main():
 
     # First disable other sources of interrupts
     rtc.enable_timer(enable=False, repeat=False, generate_interrupt=False)
+    rtc.enable_periodic_time_update_interrupt(generate_interrupt=False)
     rtc.clear_interrupt_flags()
 
     # set the alarm to trigger 2 minutes from now
-    rtc.set_minute_alarm(current_datetime.minute + 2 % 60)
+    minute_alarm = current_datetime.minute + 2 % 60
+    rtc.set_minute_alarm(minute_alarm)
     rtc.enable_alarm(enable=True, generate_interrupt=True)
+    print("Alarm set to trigger two minutes from now...")
+    print("The alarm will trigger every hour at minute {}".format(minute_alarm))
 
-    # set the pin to listen to interrupts
+    # interrupt routine
     def on_interrupt():
         print("Alarm: beep beep")
+        print(rtc.get_time())
+        print("Press CTRL + C to terminate program...")
         rtc.clear_interrupt_flags()
 
+    # set the pin to listen to interrupts
     int_listener_pin = "GPIO4"
     interrupt = gpio.Button(int_listener_pin, pull_up=None, active_state=False)
     interrupt.when_pressed = on_interrupt
