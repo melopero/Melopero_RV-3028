@@ -6,7 +6,7 @@
 from setuptools import setup
 
 setup(
-    name='Melopero_RV-3028',
+    name='melopero_RV-3028',
     version='0.1.0',
     packages=['melopero_RV_3028'],
     url='https://github.com/melopero/Melopero_RV-3028',

@@ -1,5 +1,8 @@
 # Melopero_RV-3028
+## Install 
 
+To install the module, open a terminal and run this command:
+```sudo pip3 install melopero-RV-3028```
 ## How to use
 
 Importing the module and device object creation:
