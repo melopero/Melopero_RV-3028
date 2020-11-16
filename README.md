@@ -42,7 +42,7 @@ A library for interfacing the <b>Melopero RV-3028 Extreme Low Power RTC module b
 ### Prerequisites
 You will need:
 - a python3 version, which you can get here: [download python3](https://www.python.org/downloads/)
-- the SAM M8Q gps: [buy here](https://www.melopero.com/shop/)
+- a Melopero RV-3028 breakout board: [buy here](https://www.melopero.com/shop/)
 
 ### Connect the sensor to the Raspberry Pi
 You can find a description of the GPIO connector of the Raspberry Pi [HERE](https://www.raspberrypi.org/documentation/usage/gpio/)
