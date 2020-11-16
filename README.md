@@ -1,8 +1,83 @@
 # Melopero_RV-3028
-## Install 
+A library for interfacing the <b>Melopero RV-3028 Extreme Low Power RTC module breakout</b> with a Raspberry Pi.
+<br> If you were looking for the Arduino library click [HERE](https://github.com/melopero/Melopero_RV-3028_Arduino_Library)
 
+![melopero logo](images/Melopero-RV-3028-diagonal-2.jpg?raw=true)
+
+# Pinouts
+
+<table style="width:100%">
+  <tr>
+    <th>Melopero RV-3028</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>3V3</td>
+    <td>Input power pin. Apply 3.3V to this pin</td>
+  </tr>
+  <tr>
+    <td>SCL</td>
+    <td>I2C Serial CLock pin</td>
+  </tr>
+  <tr>
+    <td>SDA</td>
+    <td>I2C Serial DAta pin</td>
+  </tr>
+  <tr>
+    <td>GND</td>
+    <td>Ground pin</td>
+  </tr>
+  <tr>
+    <td>EVI</td>
+    <td>External Event Input(INPUT), pulled high (see schematics for more details)</td>
+  </tr>
+  <tr>
+    <td>INT</td>
+    <td>Interrupt Output, active LOW, pulled-high (see schematics for more details) </td>
+  </tr>
+</table>
+
+
+## Getting Started
+### Prerequisites
+You will need:
+- a python3 version, which you can get here: [download python3](https://www.python.org/downloads/)
+- the SAM M8Q gps: [buy here](https://www.melopero.com/shop/)
+
+### Connect the sensor to the Raspberry Pi
+You can find a description of the GPIO connector of the Raspberry Pi [HERE](https://www.raspberrypi.org/documentation/usage/gpio/)
+<br>The RV-3028 communicates over I2C:
+<table style="width:100%">
+  <tr>
+    <th>Melopero RV-3028</th>
+    <th>Raspberry Pi</th> 
+  </tr>
+  <tr>
+    <td>3V3</td>
+    <td>3.3V</td> 
+  </tr>
+  <tr>
+    <td>SCL</td>
+    <td>SCL</td> 
+  </tr>
+  <tr>
+    <td>SDA</td>
+    <td>SDA</td> 
+  </tr>
+  <tr>
+    <td>GND</td>
+    <td>GND</td> 
+  </tr>
+  <tr>
+    <td>INT</td>
+    <td>any available GPIO</td> 
+  </tr>
+</table>
+
+
+## Install
 To install the module, open a terminal and run this command:
-```sudo pip3 install melopero-RV-3028```
+<br>```sudo pip3 install melopero-RV-3028```
 ## How to use
 
 Importing the module and device object creation:
