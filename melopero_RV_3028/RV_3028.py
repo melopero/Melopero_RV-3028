@@ -4,7 +4,7 @@
 @author: Leonardo La Rocca
 """
 
-from smbus2 import SMBusWrapper
+from smbus2 import SMBus
 
 
 class RV_3028():
@@ -59,15 +59,15 @@ class RV_3028():
         self.i2c_bus = i2c_bus
 
     def read_register(self, reg_address: int) -> int:
-        with SMBusWrapper(self.i2c_bus) as bus:
+        with SMBus(self.i2c_bus) as bus:
             return bus.read_byte_data(self.i2c_address, reg_address)
 
     def read_registers(self, start_reg_address: int, amount: int) -> list:
-        with SMBusWrapper(self.i2c_bus) as bus:
+        with SMBus(self.i2c_bus) as bus:
             return bus.read_i2c_block_data(self.i2c_address, start_reg_address, amount)
 
     def write_register(self, reg_address: int, value: int) -> None:
-        with SMBusWrapper(self.i2c_bus) as bus:
+        with SMBus(self.i2c_bus) as bus:
             bus.write_byte_data(self.i2c_address, reg_address, value)
 
     def and_or_register(self, reg_address: int, and_flag: int, or_flag: int) -> None:
